@@ -10,7 +10,7 @@
   with_items:
     - '{{ mcs_path }}'
     - '{{ mcs_path }}/plugins'
-  become: yes
+  become: true
 
 - name: List paper builds
   ansible.builtin.uri:
@@ -30,7 +30,7 @@
     dest: "{{ mcs_path }}/{{ papermc_api_build.json.downloads.application.name }}"
     checksum: sha256:{{ papermc_api_build.json.downloads.application.sha256 }}
     mode: '0644'
-  become: yes
+  become: true
   become_user: '{{ mcs_user }}'
 
 - name: Add systemd service
@@ -38,7 +38,7 @@
     src: mcs.service
     dest: /lib/systemd/system/mcs.service
     mode: '0644'
-  become: yes
+  become: true
   notify:
     - Mcs_reload_systemd
     - Mcs_restart
@@ -48,7 +48,7 @@
     src: server.sh
     dest: '{{ mcs_path }}/server.sh'
     mode: 'a+x'
-  become: yes
+  become: true
   become_user: '{{ mcs_user }}'
 
 - name: Add systemd config
@@ -56,7 +56,7 @@
     src: default.conf
     dest: /etc/default/mcs
     mode: '0644'
-  become: yes
+  become: true
   notify:
     - Mcs_reload_systemd
     - Mcs_restart
