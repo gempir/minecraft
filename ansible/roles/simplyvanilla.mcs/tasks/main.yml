@@ -6,8 +6,8 @@
 - name: Import java.yml
   ansible.builtin.import_tasks: java.yml
 
-- name: Import game.yml
-  ansible.builtin.import_tasks: game.yml
+- name: Import paper.yml
+  ansible.builtin.import_tasks: paper.yml
 
 - name: Import config.yml
   ansible.builtin.import_tasks: config.yml
