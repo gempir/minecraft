@@ -8,10 +8,6 @@ start() {
 }
 
 stop() {
-  screen -p 0 -S mcs -X eval 'stuff "say §eSERVER RESTARTING IN 60 SECONDS..."\015'
-  sleep 30
-  screen -p 0 -S mcs -X eval 'stuff "say §eSERVER RESTARTING IN 30 SECONDS..."\015'
-  sleep 15
   screen -p 0 -S mcs -X eval 'stuff "say §eSERVER RESTARTING IN 15 SECONDS..."\015'
   sleep 5
   for i in {10..1}; do
