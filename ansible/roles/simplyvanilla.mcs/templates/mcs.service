@@ -3,21 +3,18 @@ Description=Minecraft Server
 After=network.target
 
 [Service]
-WorkingDirectory={{ mcs_path }}
 User={{ mcs_user }}
 Group={{ mcs_user }}
-EnvironmentFile=/etc/default/mcs
-Type=oneshot
-ExecStart=/usr/bin/screen -DmS mcs-%i {{ jname.stdout }}/bin/java -Xms{{ mcs_heap }}g -Xmx{{ mcs_heap }}g -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -javaagent:/opt/jolokia/jolokia-jvm-{{ mcs_jolokia_version }}.jar -jar spigot-{{ mcs_version }}.jar nogui 
-
-ExecStop=/usr/bin/screen -p 0 -S mcs-%i -X eval 'stuff "say SERVER SHUTTING DOWN. Saving map..."\\015'
-ExecStop=/usr/bin/screen -p 0 -S mcs-%i -X eval 'stuff "save-all"\\015'
-ExecStop=/usr/bin/screen -p 0 -S mcs-%i -X eval 'stuff "stop"\\015'
+Type=simple
+WorkingDirectory={{ mcs_path }}
+ExecStart=screen -DmS mcs {{ mcs_path }}/run.sh nogui
+ExecStop=screen -p 0 -S mcs -X eval 'stuff "say SERVER SHUTTING DOWN. Saving map..."\\015'
+ExecStop=screen -p 0 -S mcs -X eval 'stuff "save-all"\\015'
+ExecStop=screen -p 0 -S mcs -X eval 'stuff "stop"\\015'
 ExecStop=/bin/sleep 2
 
-{% if mcs_cpu_affinity is defined and mcs_cpu_affinity|length > 0 %}
-CPUAffinity={{ mcs_cpu_affinity|join(',') }}
-{% endif %}
+RestartSec=30
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

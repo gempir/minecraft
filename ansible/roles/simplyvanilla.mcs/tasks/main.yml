@@ -9,9 +9,6 @@
 - name: Import game.yml
   ansible.builtin.import_tasks: game.yml
 
-- name: Import config.yml
-  ansible.builtin.import_tasks: config.yml
-
 - name: Import o11y.yml
   ansible.builtin.import_tasks: o11y.yml
 

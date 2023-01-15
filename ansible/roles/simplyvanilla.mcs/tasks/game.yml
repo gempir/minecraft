@@ -8,57 +8,40 @@
     mode: "0755"
   with_items:
     - "{{ mcs_path }}"
-    - "{{ mcs_path }}/plugins"
-    - "{{ mcs_path }}/build"
   become: true
 
 - name: Check server exists
   stat:
-    path: "{{ mcs_path }}/spigot-{{ mcs_version }}.jar"
-  register: server_jar_stat
+    path: "{{ mcs_path }}/run.sh"
+  register: server_build_stat
 
-- name: Delete build dir
-  file:
-    state: absent
-    path: "{{ mcs_path }}/build"
-  when: not server_jar_stat.stat.exists
-
-- name: Create build directory
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ mcs_user }}"
-    group: "{{ mcs_user }}"
-    mode: "0755"
-  with_items:
-    - "{{ mcs_path }}/build"
-  become: true
-  when: not server_jar_stat.stat.exists
-
-- name: Download spigot
+- name: Download forge
   ansible.builtin.get_url:
-    url: https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-    dest: "{{ mcs_path }}/build/"
+    url: https://maven.minecraftforge.net/net/minecraftforge/forge/1.19.3-44.1.5/forge-1.19.3-44.1.5-installer.jar
+    dest: "{{ mcs_path }}"
     mode: "0644"
   become: true
   become_user: "{{ mcs_user }}"
-  when: not server_jar_stat.stat.exists
+  when: not server_build_stat.stat.exists
 
-- name: Build spigot
-  shell: "cd {{ mcs_path }}/build && java -jar BuildTools.jar --rev {{ mcs_version }}"
+- name: Build forge
+  shell: "cd {{ mcs_path }} && java -jar forge-1.19.3-44.1.5-installer.jar --installServer"
   become: true
   become_user: "{{ mcs_user }}"
-  when: not server_jar_stat.stat.exists
+  when: not server_build_stat.stat.exists
 
-- name: Copy spigot
+- name: Copy-over files
   ansible.builtin.copy:
-    src: "{{ mcs_path }}/build/spigot-{{ mcs_version }}.jar"
-    remote_src: true
-    dest: "{{ mcs_path }}/spigot-{{ mcs_version }}.jar"
-    mode: "0644"
+    src: "{{ item }}"
+    dest: "{{ mcs_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - eula.txt
+    - server.properties
+    - whitelist.json
+    - user_jvm_args.txt
   become: true
   become_user: "{{ mcs_user }}"
-  when: not server_jar_stat.stat.exists
 
 - name: Add systemd service
   ansible.builtin.template:
