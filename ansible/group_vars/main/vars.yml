@@ -9,3 +9,5 @@ mcs_jolokia_version: '1.7.1'
 
 # set 'MM HH' of when daily restarts should occur
 mcs_daily_restart: '' 
+
+forge_version: '1.19.2-43.2.3'

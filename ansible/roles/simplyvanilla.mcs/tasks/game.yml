@@ -17,7 +17,7 @@
 
 - name: Download forge
   ansible.builtin.get_url:
-    url: https://maven.minecraftforge.net/net/minecraftforge/forge/1.19.3-44.1.5/forge-1.19.3-44.1.5-installer.jar
+    url: "https://maven.minecraftforge.net/net/minecraftforge/forge/{{ forge_version }}/forge-{{ forge_version }}-installer.jar"
     dest: "{{ mcs_path }}"
     mode: "0644"
   become: true
@@ -25,7 +25,7 @@
   when: not server_build_stat.stat.exists
 
 - name: Build forge
-  shell: "cd {{ mcs_path }} && java -jar forge-1.19.3-44.1.5-installer.jar --installServer"
+  shell: "cd {{ mcs_path }} && java -jar forge-{{ forge_version }}-installer.jar --installServer"
   become: true
   become_user: "{{ mcs_user }}"
   when: not server_build_stat.stat.exists
